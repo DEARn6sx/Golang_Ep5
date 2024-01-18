@@ -19,6 +19,8 @@ const (
 	dbname   = "mydeardatabase" // as defined in docker-compose.yml
 )
 
+var Db *gorm.DB // Declare db as a package-level variable
+
 func ConnectDB() {
 	// Configure your PostgreSQL database details here
 	dsn := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -35,15 +37,16 @@ func ConnectDB() {
 		},
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+	dbs, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: newLogger, // add Logger
 	})
-	
+
 	if err != nil {
 		//panic : break process!!
 		panic("failed to connect to database")
 	}
+	Db = dbs
 	// Migrate the schema
-	db.AutoMigrate(&Book{}) //AutoMigrate : Compare DB and Stuck //unsupport modify colums
+	Db.AutoMigrate(&Book{}) //AutoMigrate : Compare DB and Stuck //unsupport modify colums
 	fmt.Println("Database migration completed!")
 }
